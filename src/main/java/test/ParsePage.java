@@ -8,6 +8,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import java.nio.charset.StandardCharsets;
+import com.google.gson.Gson;
 
 public class ParsePage extends Thread {
     public static void AppendContent(String page) {
@@ -24,16 +25,26 @@ public class ParsePage extends Thread {
             System.out.println("error: " + e.toString());
         }
     }
-    public String GetContent(String html) {
-        String text = null;
-        Document ndoc = Jsoup.parse(html);
-        if (ndoc != null) {
-            Elements newsDoc = ndoc.getElementsByClass("b-page__content");
-            text = newsDoc.text();
-        }
-        return text;
+    class Content {
+        String Title = null;
+        String Datetime = null;
+        String Text = null;
     }
-
+    public String GetTitle(String page) {
+        Document doc = Jsoup.parse(page);
+        Elements title = doc.getElementsByClass("b-page__title");
+        return title.text();
+    }
+    public String GetDatetime(String page) {
+        Document doc = Jsoup.parse(page);
+        Elements datetime = doc.getElementsByClass("b-page__single-date");
+        return datetime.first().text();
+    }
+    public String GetText(String page) {
+        Document doc = Jsoup.parse(page);
+        Elements text = doc.getElementsByClass("b-page__content");
+        return text.text();
+    }
     public void run() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
@@ -47,9 +58,13 @@ public class ParsePage extends Thread {
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
                 String page = new String(delivery.getBody(), "UTF-8");  // get page from queue PAGES
                 try {
-                    String content = null;
-                    content = GetContent(page);
-                    AppendContent(content);               // append text to queue CONTENTS
+                    Gson gson = new Gson();
+
+                    Content cont = new Content();
+                    cont.Title = GetTitle(page);
+                    cont.Datetime = GetDatetime(page);
+                    cont.Text = GetText(page);
+                    AppendContent(gson.toJson(cont));   // convert java object to json and append it to queue CONTENTS
                 } catch (Exception e) {
                     System.out.println("error while parsing page " + e.toString());
                 } finally {
