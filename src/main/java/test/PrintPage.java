@@ -5,10 +5,8 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.DeliverCallback;
 
-public class PrintPage extends Thread
-{
-    public void run()
-    {
+public class PrintPage extends Thread {
+    public void run() {
         try {
             ConnectionFactory factory = new ConnectionFactory();
             factory.setHost("localhost");
@@ -18,15 +16,15 @@ public class PrintPage extends Thread
             Connection connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
-            channel.queueDeclare("PAGES", false, false, true, null);
+            channel.queueDeclare("CONTENTS", false, false, true, null);
 
             DeliverCallback deliverCallback = (consumerTag, delivery) -> {
-                String text = new String(delivery.getBody(), "UTF-8");  // get text from PAGES
-                System.out.println(text + "\n");                                    // print text
+                String text = new String(delivery.getBody(), "UTF-8");     // get content from CONTENTS...
+                System.out.println(text + "\n");                                      // and just print text
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             };
             boolean autoAck = false;
-            channel.basicConsume("PAGES", autoAck, deliverCallback, consumerTag -> { });
+            channel.basicConsume("CONTENTS", autoAck, deliverCallback, consumerTag -> { });
         } catch (Exception e) {
             System.out.println("error: "+ e.toString());
         }

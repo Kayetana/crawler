@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class TaskController {
-    //private static String server = "http://inelstal.ru";
     public static Document getUrl(String url) {    //download page
         int code = 0;
         Document doc = null;
