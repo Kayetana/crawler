@@ -17,14 +17,14 @@ public class Main {
             ParsePage t3 = new ParsePage();             // threads 3, 4 get pages from queue PAGES, parse them and
             ParsePage t4 = new ParsePage();             // append content to queue CONTENTS
 
-            PrintPage t5 = new PrintPage();             // threads 5, 6 get content from queue CONTENTS and just print it
-            PrintPage t6 = new PrintPage();
+            //PrintPage t5 = new PrintPage();             // threads 5, 6 get content from queue CONTENTS and just print it
+            //PrintPage t6 = new PrintPage();
 
             t1.start();
             t2.start();
             t3.start();
             t4.start();
-            t5.start();
+            //t5.start();
             } catch (Exception e) {
             System.out.println("error: "+ e.toString());
         }
